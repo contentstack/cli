@@ -22,9 +22,9 @@ export {
   ContentstackConfig,
 } from './contentstack-management-sdk';
 export * from './management-types';
-export { default as printFlagDeprecation } from './flag-deprecation-check';
 export * from './http-client';
 export * from './fs-utility';
+export * from './content-type-utils';
 export { default as NodeCrypto } from './encrypter';
 export { Args as args, Flags as flags, Command } from './cli-ux';
 export * from './helpers';
@@ -76,10 +76,20 @@ export {
 export type { FlagInput, ArgInput, FlagDefinition } from '@oclif/core/lib/interfaces/parser';
 
 export { default as TablePrompt } from './inquirer-table-prompt';
+export { loadChalk, getChalk } from './chalk';
+export type { ChalkInstance } from './chalk';
 
 export { Logger };
 export { default as authenticationHandler } from './authentication-handler';
-export {v2Logger as log, cliErrorHandler, handleAndLogError, getLogPath} from './logger/log'
+export { v2Logger as log, cliErrorHandler, handleAndLogError, getLogPath, getSessionLogPath } from './logger/log';
+export {
+  CLIProgressManager,
+  SummaryManager,
+  PrimaryProcessStrategy,
+  ProgressStrategyRegistry,
+  CustomProgressStrategy,
+  DefaultProgressStrategy,
+} from './progress-summary';
 
 export * from './feature-status';
 export * from './region-endpoints';

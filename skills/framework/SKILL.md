@@ -1,3 +1,8 @@
+---
+name: framework
+description: Core utilities, configuration, logging, and framework patterns for CLI development. Use when working with utilities, configuration management, error handling, or core framework components.
+---
+
 # Framework Patterns
 
 Core utilities, configuration, logging, and framework patterns for Contentstack CLI development.
@@ -94,7 +99,7 @@ The utilities provide error handling functions and error classes.
 import { handleAndLogError } from '@contentstack/cli-utilities';
 
 try {
-  await risky operation();
+  await riskyOperation();
 } catch (error) {
   handleAndLogError(error, {
     module: 'config-set-region',
@@ -346,6 +351,72 @@ if (!configHandler.get('authenticationMethod')) {
   throw new CLIError('Authentication required. Please login first.');
 }
 ```
+
+### OAuth Token Refresh Serialization
+
+When multiple API calls happen concurrently and a token refresh is needed, serialize the refresh operation so all concurrent callers await the same refresh instead of duplicate refresh attempts.
+
+**The Pattern:**
+```typescript
+private oauthRefreshInFlight: Promise<void> | null = null;
+
+async compareOAuthExpiry(force: boolean = false): Promise<void> {
+  const oauthDateTime = configHandler.get(this.oauthDateTimeKeyName);
+  const authorisationType = configHandler.get(this.authorisationTypeKeyName);
+  
+  if (oauthDateTime && authorisationType === this.authorisationTypeOAUTHValue) {
+    const now = new Date();
+    const oauthDate = new Date(oauthDateTime);
+    const oauthValidUpto = new Date(oauthDate.getTime() + 59 * 60 * 1000);
+    const tokenExpired = oauthValidUpto <= now;
+    const shouldRefresh = force || tokenExpired;
+
+    if (!shouldRefresh) {
+      return Promise.resolve();
+    }
+
+    // If a refresh is already in progress, return the existing promise
+    // so concurrent callers await the same operation
+    if (this.oauthRefreshInFlight) {
+      return this.oauthRefreshInFlight;
+    }
+
+    // Create and store the refresh promise
+    this.oauthRefreshInFlight = (async () => {
+      try {
+        if (force) {
+          cliux.print('Forcing token refresh...');
+        } else {
+          cliux.print('Token expired, refreshing the token');
+        }
+        await this.refreshToken();
+      } catch (error) {
+        cliux.error('Error refreshing token');
+        throw error;
+      } finally {
+        // Clear the reference after completion
+        this.oauthRefreshInFlight = null;
+      }
+    })();
+
+    return this.oauthRefreshInFlight;
+  } else {
+    cliux.print('No OAuth configuration set.');
+    return Promise.resolve();
+  }
+}
+```
+
+**Key Benefits:**
+- **Prevents duplicate refreshes** — Only one refresh happens even with multiple concurrent API calls
+- **Concurrent call serialization** — All callers wait for the same refresh to complete
+- **Clean state management** — The promise reference is cleared after completion
+- **Error propagation** — Errors in the refresh are thrown to all awaiting callers
+
+**Use This Pattern For:**
+- OAuth token refresh operations
+- Any critical operation that should only run once even with concurrent triggers
+- Operations where parallel execution would cause conflicts or race conditions
 
 ## Common Patterns
 

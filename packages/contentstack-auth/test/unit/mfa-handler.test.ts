@@ -46,7 +46,6 @@ describe('MFAHandler', () => {
     });
 
     it.skip('should fallback to stored configuration when environment variable is not set', async () => {
-      // Stubbing NodeCrypto.prototype does not affect already-created mfaHandler instance
       const encryptedSecret = 'encrypted-secret';
       configStub.returns({ secret: encryptedSecret });
       encrypterStub.decrypt.returns(validSecret);
@@ -66,5 +65,4 @@ describe('MFAHandler', () => {
       expect(authenticator.verify({ token: code, secret: envSecret })).to.be.true;
     });
   });
-
 });

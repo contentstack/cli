@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import Logger from '../../src/logger/logger';
-import { getSessionLogPath } from '../../src/logger/session-path';
+import { getSessionLogPath, clearSessionLogPathCache } from '../../src/logger/session-path';
 import configHandler from '../../src/config-handler';
 
 describe('Logger', () => {
@@ -233,12 +233,77 @@ describe('Logger', () => {
   });
 });
 
+describe('Console output in progress-manager mode', () => {
+  const tempDir = path.join(os.tmpdir(), `csdx-progress-log-${Date.now()}`);
+
+  function hasConsoleTransport(winLogger: any): boolean {
+    return winLogger.transports.some((t: any) => t.constructor && t.constructor.name === 'Console');
+  }
+
+  fancy
+    .stub(configHandler, 'get', (...args: any[]) => {
+      const key = args[0];
+      if (key === 'log') return { progressSupportedModule: 'bulk-operations', showConsoleLogs: false };
+      if (key === 'log.path') return tempDir;
+      if (key === 'currentCommandId') return 'bulk-operations';
+      if (key === 'sessionId') return 'test-session';
+      return undefined;
+    })
+    .it('keeps console output for errors when progress bars suppress info logs', () => {
+      const progressLogger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      expect(hasConsoleTransport(progressLogger['loggers'].error)).to.equal(true);
+    });
+
+  fancy
+    .stub(configHandler, 'get', (...args: any[]) => {
+      const key = args[0];
+      if (key === 'log') return { progressSupportedModule: 'bulk-operations', showConsoleLogs: false };
+      if (key === 'log.path') return tempDir;
+      if (key === 'currentCommandId') return 'bulk-operations';
+      if (key === 'sessionId') return 'test-session';
+      return undefined;
+    })
+    .it('keeps console output for warnings when progress bars suppress info logs', () => {
+      const progressLogger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      expect(hasConsoleTransport(progressLogger['loggers'].warn)).to.equal(true);
+    });
+
+  fancy
+    .stub(configHandler, 'get', (...args: any[]) => {
+      const key = args[0];
+      if (key === 'log') return { progressSupportedModule: 'bulk-operations', showConsoleLogs: false };
+      if (key === 'log.path') return tempDir;
+      if (key === 'currentCommandId') return 'bulk-operations';
+      if (key === 'sessionId') return 'test-session';
+      return undefined;
+    })
+    .it('suppresses console output for info logs so progress bars stay clean', () => {
+      const progressLogger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      expect(hasConsoleTransport(progressLogger['loggers'].info)).to.equal(false);
+    });
+
+  fancy
+    .stub(configHandler, 'get', (...args: any[]) => {
+      const key = args[0];
+      if (key === 'log') return { progressSupportedModule: 'bulk-operations', showConsoleLogs: true };
+      if (key === 'log.path') return tempDir;
+      if (key === 'currentCommandId') return 'bulk-operations';
+      if (key === 'sessionId') return 'test-session';
+      return undefined;
+    })
+    .it('shows console output for info logs when console logging is enabled', () => {
+      const progressLogger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      expect(hasConsoleTransport(progressLogger['loggers'].info)).to.equal(true);
+    });
+});
+
 describe('Session Log Path', () => {
   let sandbox: sinon.SinonSandbox;
   let tempDir: string;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    clearSessionLogPathCache();
     // Create a temporary directory for testing
     tempDir = path.join(os.tmpdir(), `csdx-log-test-${Date.now()}`);
     fs.mkdirSync(tempDir, { recursive: true });

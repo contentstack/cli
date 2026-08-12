@@ -1,0 +1,15 @@
+name: CLI Release Pipeline
+
+on:
+  push:
+    branches: [v2-beta]
+
+jobs:
+  plugins:
+    uses: ./.github/workflows/release-v2-beta-platform-plugins.yml
+    secrets: inherit
+
+  core:
+    needs: plugins
+    uses: ./.github/workflows/release-v2-beta-core.yml
+    secrets: inherit

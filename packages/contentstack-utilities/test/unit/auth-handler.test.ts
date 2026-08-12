@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { expect } from 'chai';
 import { assert, stub, createSandbox } from 'sinon';
-import { cliux } from '@contentstack/cli-utilities';
+import cliux from '../../src/cli-ux';
 import authHandler from '../../src/auth-handler';
 import configHandler from '../../src/config-handler';
 import { HttpClient } from '../../src/http-client';
@@ -32,8 +32,10 @@ describe('Auth Handler', () => {
   describe('oauth', () => {
     let createHTTPServerStub;
     let openOAuthURLStub;
+    let initSDKStub;
 
     beforeEach(() => {
+      initSDKStub = stub(authHandler, 'initSDK').resolves();
       createHTTPServerStub = stub(authHandler, 'createHTTPServer');
       openOAuthURLStub = stub(authHandler, 'openOAuthURL');
     });
@@ -41,6 +43,7 @@ describe('Auth Handler', () => {
     afterEach(() => {
       createHTTPServerStub.restore();
       openOAuthURLStub.restore();
+      initSDKStub.restore();
     });
 
     it('should reject with an error when createHTTPServer fails', async () => {
@@ -167,16 +170,21 @@ describe('Auth Handler', () => {
       };
 
       const exchangeStub = sandbox.stub().resolves(userData);
-      sandbox.stub(authHandler, 'oauthHandler').value({
+      const prevOAuthHandler = authHandler.oauthHandler;
+      authHandler.oauthHandler = {
         exchangeCodeForToken: exchangeStub,
-      });
+      };
       const getUserDetailsStub = sandbox.stub(authHandler, 'getUserDetails').resolves(userData);
       const setConfigDataStub = sandbox.stub(authHandler, 'setConfigData').resolves();
-      await authHandler.getAccessToken(code);
-      // Verify the actual calls made:
-      assert.calledWith(exchangeStub, code); // exchangeCodeForToken called with code
-      assert.calledWith(getUserDetailsStub, userData); // getUserDetails called with result from exchange
-      assert.calledWith(setConfigDataStub, 'oauth', userData); // setConfigData called with 'oauth' and userData
+      try {
+        await authHandler.getAccessToken(code);
+        // Verify the actual calls made:
+        assert.calledWith(exchangeStub, code); // exchangeCodeForToken called with code
+        assert.calledWith(getUserDetailsStub, userData); // getUserDetails called with result from exchange
+        assert.calledWith(setConfigDataStub, 'oauth', userData); // setConfigData called with 'oauth' and userData
+      } finally {
+        authHandler.oauthHandler = prevOAuthHandler;
+      }
     });
   });
 
@@ -296,51 +304,59 @@ describe('Auth Handler', () => {
       };
       // Stub oauthHandler with refreshAccessToken method
       const refreshAccessTokenStub = sandbox.stub().resolves(expectedData);
-      sandbox.stub(authHandler, 'oauthHandler').value({
+      const prevOAuthHandler = authHandler.oauthHandler;
+      authHandler.oauthHandler = {
         refreshAccessToken: refreshAccessTokenStub,
-      });
-      // Stub configHandler.get to return proper values
-      sandbox
-        .stub(configHandler, 'get')
-        .withArgs(authHandler.oauthRefreshTokenKeyName)
-        .returns(configOauthRefreshToken)
-        .withArgs(authHandler.authorisationTypeKeyName)
-        .returns(configAuthorisationType);
-      // Stub setConfigData
-      sandbox.stub(authHandler, 'setConfigData').resolves(expectedData);
-      const result = await authHandler.refreshToken();
-      // Verify calls
-      assert.calledWith(refreshAccessTokenStub, configOauthRefreshToken);
-      assert.calledWith(authHandler.setConfigData, 'refreshToken', expectedData);
-      expect(result).to.deep.equal(expectedData);
+      };
+      try {
+        // Stub configHandler.get to return proper values
+        sandbox
+          .stub(configHandler, 'get')
+          .withArgs(authHandler.oauthRefreshTokenKeyName)
+          .returns(configOauthRefreshToken)
+          .withArgs(authHandler.authorisationTypeKeyName)
+          .returns(configAuthorisationType);
+        // Stub setConfigData
+        sandbox.stub(authHandler, 'setConfigData').resolves(expectedData);
+        const result = await authHandler.refreshToken();
+        // Verify calls
+        assert.calledWith(refreshAccessTokenStub, configOauthRefreshToken);
+        assert.calledWith(authHandler.setConfigData, 'refreshToken', expectedData);
+        expect(result).to.deep.equal(expectedData);
+      } finally {
+        authHandler.oauthHandler = prevOAuthHandler;
+      }
     });
   });
 
   describe('getUserDetails', () => {
     let sandbox;
-    let managementAPIClientStub;
 
     beforeEach(() => {
       sandbox = createSandbox();
-      managementAPIClientStub = sandbox.stub();
     });
 
     afterEach(() => {
       sandbox.restore();
+      authHandler.managementAPIClient = undefined;
     });
 
-    it('should reject with error when access token is invalid/empty', async () => {
+    it('should reject when Management SDK getUser fails', async () => {
       const data = {
         access_token: config.invalid_access_token,
       };
       const expectedError = new Error('The provided access token is invalid or expired or revoked');
 
       const getUserStub = sandbox.stub().rejects(expectedError);
-      managementAPIClientStub.returns({ getUser: getUserStub });
+      authHandler.managementAPIClient = { getUser: getUserStub };
 
-      authHandler.contentstackManagementSDKClient = managementAPIClientStub;
-
-      authHandler.getUserDetails(data);
+      try {
+        await authHandler.getUserDetails(data);
+        expect.fail('Expected getUserDetails to reject');
+      } catch (error) {
+        expect(error).to.equal(expectedError);
+      }
+      assert.calledOnce(getUserStub);
     });
 
     it('should reject with error when access token is invalid/empty', async () => {
@@ -455,10 +471,12 @@ describe('Auth Handler', () => {
 
     beforeEach(() => {
       sandbox = createSandbox();
-      configHandlerGetStub = sandbox.stub();
-      cliuxPrintStub = sandbox.stub();
-      refreshTokenStub = sandbox.stub();
-      unsetConfigDataStub = sandbox.stub();
+      authHandler.oauthRefreshInFlight = null;
+      authHandler.isRefreshingToken = false;
+      configHandlerGetStub = sandbox.stub(configHandler, 'get');
+      cliuxPrintStub = sandbox.stub(cliux, 'print');
+      refreshTokenStub = sandbox.stub(authHandler, 'refreshToken').resolves();
+      unsetConfigDataStub = sandbox.stub(authHandler, 'unsetConfigData');
     });
 
     afterEach(() => {
@@ -466,40 +484,64 @@ describe('Auth Handler', () => {
     });
 
     it('should resolve if the OAuth token is valid and not expired', async () => {
-      const expectedOAuthDateTime = '2023-05-30T12:00:00Z';
-      const expectedAuthorisationType = 'oauth';
-      const now = new Date('2023-05-30T12:30:00Z');
+      const expectedOAuthDateTime = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      const expectedAuthorisationType = 'OAUTH';
 
       configHandlerGetStub.withArgs(authHandler.oauthDateTimeKeyName).returns(expectedOAuthDateTime);
       configHandlerGetStub.withArgs(authHandler.authorisationTypeKeyName).returns(expectedAuthorisationType);
 
-      sandbox.stub(Date, 'now').returns(now.getTime());
-
-      try {
-        await authHandler.compareOAuthExpiry();
-      } catch (error) {
-        expect(error).to.be.undefined;
-        expect(cliuxPrintStub.called).to.be.false;
-        expect(refreshTokenStub.called).to.be.false;
-        expect(unsetConfigDataStub.called).to.be.false;
-      }
+      await authHandler.compareOAuthExpiry();
+      expect(cliuxPrintStub.called).to.be.false;
+      expect(refreshTokenStub.called).to.be.false;
+      expect(unsetConfigDataStub.called).to.be.false;
     });
 
-    it('should resolve if force is true and refreshToken is called', async () => {
-      const expectedOAuthDateTime = '2023-05-30T12:00:00Z';
-      const expectedAuthorisationType = 'oauth';
+    it('should refresh when force is true even if token is not expired', async () => {
+      const expectedOAuthDateTime = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      const expectedAuthorisationType = 'OAUTH';
 
       configHandlerGetStub.withArgs(authHandler.oauthDateTimeKeyName).returns(expectedOAuthDateTime);
       configHandlerGetStub.withArgs(authHandler.authorisationTypeKeyName).returns(expectedAuthorisationType);
 
-      try {
-        await authHandler.compareOAuthExpiry();
-      } catch (error) {
-        expect(error).to.be.undefined;
-        expect(cliuxPrintStub.calledOnceWithExactly('Forcing token refresh...')).to.be.true;
-        expect(refreshTokenStub.calledOnce).to.be.true;
-        expect(unsetConfigDataStub.called).to.be.false;
-      }
+      await authHandler.compareOAuthExpiry(true);
+      expect(cliuxPrintStub.calledOnceWithExactly('Forcing token refresh...')).to.be.true;
+      expect(refreshTokenStub.calledOnce).to.be.true;
+      expect(unsetConfigDataStub.called).to.be.false;
+    });
+
+    it('should refresh when token is expired', async () => {
+      const expectedOAuthDateTime = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      const expectedAuthorisationType = 'OAUTH';
+
+      configHandlerGetStub.withArgs(authHandler.oauthDateTimeKeyName).returns(expectedOAuthDateTime);
+      configHandlerGetStub.withArgs(authHandler.authorisationTypeKeyName).returns(expectedAuthorisationType);
+
+      await authHandler.compareOAuthExpiry(false);
+      expect(cliuxPrintStub.calledOnceWithExactly('Token expired, refreshing the token')).to.be.true;
+      expect(refreshTokenStub.calledOnce).to.be.true;
+    });
+
+    it('should run a single refresh when compareOAuthExpiry is called concurrently', async () => {
+      const expectedOAuthDateTime = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      const expectedAuthorisationType = 'OAUTH';
+      let resolveRefresh;
+      const refreshDone = new Promise((r) => {
+        resolveRefresh = r;
+      });
+
+      configHandlerGetStub.withArgs(authHandler.oauthDateTimeKeyName).returns(expectedOAuthDateTime);
+      configHandlerGetStub.withArgs(authHandler.authorisationTypeKeyName).returns(expectedAuthorisationType);
+
+      refreshTokenStub.callsFake(async () => {
+        await refreshDone;
+      });
+
+      const p1 = authHandler.compareOAuthExpiry(false);
+      const p2 = authHandler.compareOAuthExpiry(false);
+      resolveRefresh();
+      await Promise.all([p1, p2]);
+
+      expect(refreshTokenStub.callCount).to.equal(1);
     });
   });
 });

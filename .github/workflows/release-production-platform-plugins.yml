@@ -1,4 +1,4 @@
-name: Release CLI Platform Plugins
+name: Release CLI Platform Plugins (Production)
 
 on:
   workflow_call:

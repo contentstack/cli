@@ -13,6 +13,7 @@ export interface CanonicalRegion {
   launchHubUrl: string;
   personalizeUrl: string;
   composableStudioUrl: string;
+  csAssetsUrl?: string;
   endpoints: RegionEndpoints;
 }
 
@@ -45,6 +46,7 @@ export function buildRegionFromEndpoints(name: string, endpoints: RegionEndpoint
     launchHubUrl: endpoints.launch,
     personalizeUrl: endpoints.personalizeManagement,
     composableStudioUrl: endpoints.composableStudio,
+    csAssetsUrl: endpoints.assetManagement,
     endpoints,
   };
 }
