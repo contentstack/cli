@@ -34,7 +34,7 @@ To verify the installation, run `csdx` in the command window.
 
 ## Migration Guide
 
-If you're upgrading from CLI 1.x to 2.x.x-beta, please refer to our comprehensive [Migration Guide](./MIGRATION.md) for:
+If you're upgrading from CLI 1.x to 2.x, please refer to our comprehensive [Migration Guide](./MIGRATION.md) for:
 
 - **Breaking changes** and new default behaviors
 - **Step-by-step migration instructions**
