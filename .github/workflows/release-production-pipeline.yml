@@ -2,7 +2,7 @@ name: CLI Production Release Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [v1-legacy]
   workflow_dispatch: # This enables manual triggering
 
 jobs:
