@@ -38,8 +38,8 @@ importers:
         specifier: ~1.8.6
         version: 1.8.6(@types/node@14.18.63)
       '@contentstack/cli-cm-bulk-publish':
-        specifier: ~1.13.0
-        version: 1.13.0(@types/node@14.18.63)
+        specifier: ~1.13.1
+        version: 1.13.1(@types/node@14.18.63)
       '@contentstack/cli-cm-clone':
         specifier: ~1.21.12
         version: 1.21.12(@types/node@14.18.63)
@@ -677,8 +677,8 @@ packages:
     resolution: {integrity: sha512-XJQJm4Bms+VICDh4Op524/W5cmYulSH3vIHC0zxKCYyebgDzERjc5C/TcqPPIcMfuYJRWxoeArlMDt2lKb5BDA==}
     engines: {node: '>=22.0.0'}
 
-  '@contentstack/cli-cm-bulk-publish@1.13.0':
-    resolution: {integrity: sha512-fIfzik/yHPZGwahjud+uR2p+wc1b4aFNTPS9AKhaW7OfJELk0mW8jbG8gFFiS8kywOJ9iS/my+x4+34ryL/EAw==}
+  '@contentstack/cli-cm-bulk-publish@1.13.1':
+    resolution: {integrity: sha512-FjC8jLEMHZIF82ArV62QZbnASks7d4RotndY6dhZVBmp2bfP1yLUckyHiSbD2y+zlSJT+pkiId4GcLNdrJzJew==}
     engines: {node: '>=22.0.0'}
 
   '@contentstack/cli-cm-clone@1.21.12':
@@ -5842,7 +5842,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@contentstack/cli-cm-bulk-publish@1.13.0(@types/node@14.18.63)':
+  '@contentstack/cli-cm-bulk-publish@1.13.1(@types/node@14.18.63)':
     dependencies:
       '@contentstack/cli-command': 1.8.7(@types/node@14.18.63)(debug@4.4.3)
       '@contentstack/cli-config': 1.21.2(@types/node@14.18.63)
