@@ -1,4 +1,4 @@
-name: Release CLI Platform Plugins
+name: Release CLI Platform Plugins v1-Legacy
 
 on:
   workflow_call:
@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
-          tag: v1
+          tag: v1-x
 
       # Command
       - name: Publishing command (Production)
@@ -51,7 +51,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
-          tag: v1
+          tag: v1-x
 
       # Config
       - name: Publishing config (Production)
@@ -59,7 +59,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-config/package.json
-          tag: v1
+          tag: v1-x
 
       # Auth
       - name: Publishing auth (Production)
@@ -67,4 +67,4 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json
-          tag: v1
+          tag: v1-x
