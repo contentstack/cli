@@ -1,4 +1,4 @@
-name: CLI Production Release Pipeline
+name: CLI v1-Legacy Release
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
 
 jobs:
   plugins:
-    uses: ./.github/workflows/release-production-platform-plugins.yml
+    uses: ./.github/workflows/release-v1-legacy-platform-plugins.yml
     secrets: inherit
 
   core:
     needs: plugins
-    uses: ./.github/workflows/release-production-core.yml
+    uses: ./.github/workflows/release-v1-legacy-core.yml
     secrets: inherit
