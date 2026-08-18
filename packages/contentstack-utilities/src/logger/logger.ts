@@ -85,12 +85,7 @@ export default class Logger {
       }
     }
 
-    // Errors and warnings must always reach the console, even when progress bars
-    // suppress info/success/debug output — otherwise failures (e.g. an invalid
-    // stack API key or a taxonomy error) are silently swallowed in progress mode.
-    const isErrorOrWarn = level === 'error' || level === 'warn';
-
-    if (showConsoleLogs || isErrorOrWarn) {
+    if (showConsoleLogs) {
       transports.push(
         new winston.transports.Console({
           format: winston.format.combine(
