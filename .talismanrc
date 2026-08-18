@@ -5,3 +5,9 @@ fileignoreconfig:
   version: '1.0'
 - filename: .github/workflows/release-production-pipeline.yml
   checksum: dd858a2c2a3297c5651c2843ddae73ad0776a0386329200d01b051ddc489871e
+- filename: packages/contentstack-utilities/src/progress-summary/cli-progress-manager.ts
+  checksum: be7e833dc0abbbb211dc71f7970d8a1c680860f978dc2b871bcc9a30a659f436
+- filename: packages/contentstack-utilities/test/unit/logger.test.ts
+  checksum: ca0bbc2838a0b6a069d8fc4874e465dd30dd35377a6202eb005eb43e5ff5d871
+- filename: packages/contentstack-utilities/test/unit/cliProgressManager.test.ts
+  checksum: 6df6c21e1188b077a83a0464aecc4c628941a3fbb3bdea99db18d30b5bd3cf71

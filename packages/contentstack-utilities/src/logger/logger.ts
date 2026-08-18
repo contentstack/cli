@@ -2,10 +2,10 @@ import traverse from 'traverse';
 import { klona } from 'klona/full';
 import { normalize } from 'path';
 import * as winston from 'winston';
-import { levelColors, logLevels, PROGRESS_SUPPORTED_MODULES } from '../constants/logging';
+import { levelColors, logLevels } from '../constants/logging';
 import { LoggerConfig, LogLevel, LogType } from '../interfaces/index';
-import { configHandler } from '..';
 import { getSessionLogPath } from './session-path';
+import { isConsoleLogEnabled } from './console-policy';
 
 export default class Logger {
   private loggers: Record<string, winston.Logger>;
@@ -69,44 +69,31 @@ export default class Logger {
       }),
     ];
 
-    // Determine console logging based on configuration
-    let showConsoleLogs = true;
-    if (configHandler && typeof configHandler.get === 'function') {
-      const logConfig = configHandler.get('log') || {};
-      const currentModule = logConfig.progressSupportedModule;
-      const hasProgressSupport = currentModule && PROGRESS_SUPPORTED_MODULES.includes(currentModule);
-
-      if (hasProgressSupport) {
-        // Plugin has progress bars - respect user's explicit setting, or default to false (show progress bars)
-        showConsoleLogs = logConfig.showConsoleLogs ?? false;
-      } else {
-        // Plugin doesn't have progress support - always show console logs
-        showConsoleLogs = true;
-      }
-    }
-
-    // Errors and warnings must always reach the console, even when progress bars
-    // suppress info/success/debug output — otherwise failures (e.g. an invalid
-    // stack API key or a taxonomy error) are silently swallowed in progress mode.
-    const isErrorOrWarn = level === 'error' || level === 'warn';
-
-    if (showConsoleLogs || isErrorOrWarn) {
-      transports.push(
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-            winston.format.printf((info) => {
-              // Apply full redaction for console (user-facing)
-              const redactedInfo = this.redact(info, true);
-              const colorizer = winston.format.colorize();
-              const levelText = redactedInfo.level.toUpperCase();
-              const { timestamp, message } = redactedInfo;
-              return colorizer.colorize(redactedInfo.level, `[${timestamp}] ${levelText}: ${message}`);
-            }),
-          ),
-        }),
-      );
-    }
+    // The Console transport is always attached; whether it emits is decided per
+    // message by the console-log policy, never by the transport list. The filter
+    // below is the FIRST format in the chain so that a `false` return short-circuits
+    // the write before timestamp/printf run.
+    //
+    // It must return `info` (not `{}`) on the enabled path: logform's `combine` feeds
+    // each format's return value into the next, so returning a fresh object would
+    // *replace* `info` and the printf below would emit blank lines instead of the
+    // message. Returning `false` is winston-transport's documented skip signal.
+    transports.push(
+      new winston.transports.Console({
+        format: winston.format.combine(
+          winston.format((info) => (isConsoleLogEnabled() ? info : false))(),
+          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+          winston.format.printf((info) => {
+            // Apply full redaction for console (user-facing)
+            const redactedInfo = this.redact(info, true);
+            const colorizer = winston.format.colorize();
+            const levelText = redactedInfo.level.toUpperCase();
+            const { timestamp, message } = redactedInfo;
+            return colorizer.colorize(redactedInfo.level, `[${timestamp}] ${levelText}: ${message}`);
+          }),
+        ),
+      }),
+    );
 
     return winston.createLogger({
       levels: logLevels,

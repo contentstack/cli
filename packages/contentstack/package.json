@@ -157,6 +157,7 @@
         "./lib/hooks/prerun/plan-guard"
       ],
       "init": [
+        "./lib/hooks/init/console-policy",
         "./lib/hooks/init/region-refresh",
         "./lib/hooks/init/context-init",
         "./lib/hooks/init/utils-init",
