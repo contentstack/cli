@@ -153,8 +153,7 @@
         "./lib/hooks/prerun/init-context-for-command",
         "./lib/hooks/prerun/plan-guard",
         "./lib/hooks/prerun/default-rate-limit-check",
-        "./lib/hooks/prerun/latest-version-warning",
-        "./lib/hooks/prerun/plan-guard"
+        "./lib/hooks/prerun/latest-version-warning"
       ],
       "init": [
         "./lib/hooks/init/console-policy",
