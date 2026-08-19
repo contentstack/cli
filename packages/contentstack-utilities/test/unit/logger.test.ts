@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as os from 'os';
 import Logger from '../../src/logger/logger';
 import { getSessionLogPath, clearSessionLogPathCache } from '../../src/logger/session-path';
+import { setConsoleLogPolicy, resetConsoleLogPolicy } from '../../src/logger/console-policy';
 import configHandler from '../../src/config-handler';
 
 describe('Logger', () => {
@@ -231,6 +232,124 @@ describe('Logger', () => {
     expect(defaultLogger['shouldLog']('info', 'console')).to.equal(true);
     expect(defaultLogger['shouldLog']('debug', 'console')).to.equal(false);
   });
+});
+
+describe('Console log policy', () => {
+  const tempDir = path.join(os.tmpdir(), `csdx-console-policy-log-${Date.now()}`);
+
+  // A progress-supporting module is stubbed on purpose: it is the configuration under
+  // which the *old* transport-list logic suppressed console output for info/success.
+  // Keeping it here means these cases exercise the policy and nothing else.
+  const stubLogConfig = (...args: any[]) => {
+    const key = args[0];
+    if (key === 'log') return { progressSupportedModule: 'export' };
+    if (key === 'log.path') return tempDir;
+    if (key === 'currentCommandId') return 'export';
+    if (key === 'sessionId') return 'test-session';
+    return undefined;
+  };
+
+  function transportOf(winLogger: any, name: 'Console' | 'File'): any {
+    return winLogger.transports.find((t: any) => t.constructor && t.constructor.name === name);
+  }
+
+  /** Spy a transport's `log`, so a format returning `false` shows up as zero calls. */
+  function spyOnTransport(winLogger: any, name: 'Console' | 'File'): sinon.SinonSpy {
+    const transport = transportOf(winLogger, name);
+    expect(transport, `${name} transport should be attached to every logger`).to.exist;
+    return sinon.stub(transport, 'log').callsFake(((_info: any, next?: () => void) => {
+      if (typeof next === 'function') next();
+    }) as any);
+  }
+
+  beforeEach(() => {
+    resetConsoleLogPolicy();
+  });
+
+  afterEach(() => {
+    resetConsoleLogPolicy();
+    sinon.restore();
+  });
+
+  const levels: Array<{ level: string; call: (l: Logger) => void }> = [
+    { level: 'info', call: (l) => l.info('an info line') },
+    { level: 'success', call: (l) => l.success('a success line') },
+    { level: 'error', call: (l) => l.error('an error line') },
+    { level: 'warn', call: (l) => l.warn('a warn line') },
+  ];
+
+  levels.forEach(({ level, call }) => {
+    fancy.stub(configHandler, 'get', stubLogConfig).it(`suppresses ${level} on the console when the policy is off`, () => {
+      const logger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      const consoleSpy = spyOnTransport(logger['loggers'][level], 'Console');
+
+      call(logger);
+
+      expect(consoleSpy.callCount, `${level} should not reach the console by default`).to.equal(0);
+    });
+
+    fancy.stub(configHandler, 'get', stubLogConfig).it(`emits ${level} on the console when the policy is on`, () => {
+      const logger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      const consoleSpy = spyOnTransport(logger['loggers'][level], 'Console');
+      setConsoleLogPolicy(true);
+
+      call(logger);
+
+      expect(consoleSpy.callCount, `${level} should reach the console when opted in`).to.equal(1);
+    });
+  });
+
+  fancy
+    .stub(configHandler, 'get', stubLogConfig)
+    .it('still writes to the file transport while the console is silent', () => {
+      // The File transports were never gated by the removed `showConsoleLogs || isErrorOrWarn`
+      // logic, so inspecting log files by hand would pass regardless. Asserting both
+      // transports from one call is what actually proves the file path survived.
+      const logger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      const consoleSpy = spyOnTransport(logger['loggers'].error, 'Console');
+      const fileSpy = spyOnTransport(logger['loggers'].error, 'File');
+
+      logger.error('a file-only error');
+
+      expect(fileSpy.callCount, 'file transport must still receive the message').to.equal(1);
+      expect(consoleSpy.callCount, 'console transport must stay silent').to.equal(0);
+    });
+
+  fancy
+    .stub(configHandler, 'get', stubLogConfig)
+    .it('emits console output for a message logged with `logError`', () => {
+      const logger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      const consoleSpy = spyOnTransport(logger['loggers'].error, 'Console');
+      setConsoleLogPolicy(true);
+
+      logger.logError({ type: 'TestError', message: 'structured failure', error: new Error('boom') });
+
+      expect(consoleSpy.callCount).to.equal(1);
+    });
+
+  // Regression test for the original bug: console visibility used to be baked into the
+  // winston transport list at construction time, so any `log.*` access from an init or
+  // prerun hook froze the decision before the value arrived. It must now follow the
+  // policy no matter when the Logger was built.
+  fancy
+    .stub(configHandler, 'get', stubLogConfig)
+    .it('is not frozen at construction — a policy set after the Logger is built still applies', () => {
+      const logger = new Logger({ basePath: tempDir, consoleLogLevel: 'info', logLevel: 'info' });
+      const consoleSpy = spyOnTransport(logger['loggers'].info, 'Console');
+
+      // Constructed while the policy was off: the old code would have omitted the
+      // Console transport for `info` outright, and no later change could revive it.
+      logger.info('before opting in');
+      expect(consoleSpy.callCount, 'policy was still off').to.equal(0);
+
+      setConsoleLogPolicy(true);
+      logger.info('after opting in');
+      expect(consoleSpy.callCount, 'the decision must follow the policy, not construction time').to.equal(1);
+
+      setConsoleLogPolicy(false);
+      logger.info('after opting back out');
+      expect(consoleSpy.callCount, 'turning the policy off again must take effect too').to.equal(1);
+    });
 });
 
 describe('Session Log Path', () => {
