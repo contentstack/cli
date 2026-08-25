@@ -13,6 +13,20 @@ export function readGlobalFieldSchemas(
   dirPath: string,
   ignoredFiles: string[] = DEFAULT_GF_IGNORED_FILES,
 ): Record<string, unknown>[] {
+  // Global fields may be exported either as a single aggregate file
+  // (global_fields/globalfields.json, an array) or as one file per uid.
+  // Prefer the aggregate when present; otherwise fall back to per-uid files.
+  const aggregatePath = pResolve(dirPath, 'globalfields.json');
+  if (existsSync(aggregatePath)) {
+    try {
+      const parsed = JSON.parse(readFileSync(aggregatePath, 'utf8'));
+      if (Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>[];
+      }
+    } catch (error) {
+      console.warn('Failed to read aggregate global fields file globalfields.json:', error);
+    }
+  }
   return readContentTypeSchemas(dirPath, ignoredFiles);
 }
 
