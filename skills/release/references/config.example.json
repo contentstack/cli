@@ -1,0 +1,8 @@
+{
+  "_note": "Copy this file to config.json and fill in your org's values. Never commit config.json.",
+  "google_sheet_template_id": "YOUR_GOOGLE_SHEET_TEMPLATE_DRIVE_ID",
+  "confluence_sdk_page_id": "YOUR_CONFLUENCE_PAGE_ID",
+  "td_project_key": "TD",
+  "td_assignee_account_id": "OPTIONAL_JIRA_ACCOUNT_ID_OF_TD_TICKET_ASSIGNEE",
+  "secondary_reviewer_account_id": "OPTIONAL_JIRA_ACCOUNT_ID_FOR_PR_COMMENT_CC"
+}
