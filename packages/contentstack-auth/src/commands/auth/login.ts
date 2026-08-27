@@ -95,7 +95,17 @@ export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
         error.message = `${error.message}\nFor more information about MFA, visit: https://www.contentstack.com/docs/developers/security/multi-factor-authentication`;
       }
       handleAndLogError(error, { ...this.contextDetails });
-      process.exit();
+
+      // handleAndLogError writes to the log files; the Console transport is suppressed when the
+      // console-log policy is off, so without this the command fails in complete silence — no
+      // message for an unknown flag, an empty username, or a locked account.
+      if (!isConsoleLogEnabled()) {
+        cliux.print(`Error: ${error?.message || 'Login failed'}`, { color: 'red' });
+      }
+
+      // Exit non-zero. A bare `process.exit()` exits 0, so a failed login reported success and
+      // scripts chained on it carried on as though the user were authenticated.
+      process.exit(1);
     }
   }
 
