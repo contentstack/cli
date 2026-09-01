@@ -543,5 +543,35 @@ describe('Auth Handler', () => {
 
       expect(refreshTokenStub.callCount).to.equal(1);
     });
+
+    it('should not recurse when compareOAuthExpiry is re-entered synchronously during refreshToken (DX-10477)', async () => {
+      // Regression test for the synchronous re-entrant recursion bug.
+      // Root cause: managementSDKClient → createAPIClient → compareOAuthExpiry is called
+      // synchronously from inside refreshToken → initSDK, before the oauthRefreshInFlight
+      // guard was assigned. This caused an unbounded recursive loop and RangeError stack overflow.
+      // Fix: oauthRefreshInFlight is now set via new Promise() BEFORE the async IIFE starts,
+      // so any synchronous re-entrant call sees the guard and returns the existing promise.
+      const expectedOAuthDateTime = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      const expectedAuthorisationType = 'OAUTH';
+
+      configHandlerGetStub.withArgs(authHandler.oauthDateTimeKeyName).returns(expectedOAuthDateTime);
+      configHandlerGetStub.withArgs(authHandler.authorisationTypeKeyName).returns(expectedAuthorisationType);
+
+      refreshTokenStub.callsFake(function () {
+        // Simulate the synchronous re-entrant call from initSDK → managementSDKClient → createAPIClient.
+        // With the old code, oauthRefreshInFlight was null here → new IIFE → infinite recursion.
+        // With the fix, oauthRefreshInFlight is already set → returns the same in-flight promise.
+        const reentrantPromise = authHandler.compareOAuthExpiry(false);
+        expect(reentrantPromise).to.equal((authHandler as any).oauthRefreshInFlight);
+        return Promise.resolve();
+      });
+
+      await authHandler.compareOAuthExpiry(false);
+
+      // "Token expired, refreshing the token" must print exactly once — not on every recursive frame.
+      expect(cliuxPrintStub.calledOnceWithExactly('Token expired, refreshing the token')).to.be.true;
+      // refreshToken must be called exactly once — not infinitely.
+      expect(refreshTokenStub.callCount).to.equal(1);
+    });
   });
 });
