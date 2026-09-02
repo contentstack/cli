@@ -29,7 +29,7 @@ importers:
         specifier: ~2.0.0
         version: 2.0.0(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-auth':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-auth
       '@contentstack/cli-bulk-operations':
         specifier: ^2.0.0
@@ -59,16 +59,16 @@ importers:
         specifier: ~2.0.0
         version: 2.0.0(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-command':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-command
       '@contentstack/cli-config':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-config
       '@contentstack/cli-migration':
         specifier: ~2.0.0
         version: 2.0.0(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-utilities
       '@contentstack/cli-variants':
         specifier: ~2.0.0
@@ -192,10 +192,10 @@ importers:
   packages/contentstack-auth:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.11.14
@@ -259,7 +259,7 @@ importers:
   packages/contentstack-command:
     dependencies:
       '@contentstack/cli-utilities':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.11.14
@@ -302,10 +302,10 @@ importers:
   packages/contentstack-config:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~2.0.0
+        specifier: ~2.0.1
         version: link:../contentstack-utilities
       '@contentstack/utils':
         specifier: ~1.9.1
@@ -363,10 +363,10 @@ importers:
   packages/contentstack-utilities:
     dependencies:
       '@contentstack/management':
-        specifier: ~1.30.3
-        version: 1.30.4(debug@4.4.3)
+        specifier: ~1.31.1
+        version: 1.31.1
       '@contentstack/marketplace-sdk':
-        specifier: ^1.5.2
+        specifier: ^1.5.4
         version: 1.5.4(debug@4.4.3)
       '@contentstack/utils':
         specifier: ~1.9.1
@@ -375,7 +375,7 @@ importers:
         specifier: ^4.11.14
         version: 4.14.0
       axios:
-        specifier: ^1.18.1
+        specifier: ^1.20.0
         version: 1.20.0(debug@4.4.3)
       chalk:
         specifier: ^5.6.2
@@ -514,12 +514,12 @@ packages:
     resolution: {integrity: sha512-Dtu0gr4dnATZAPwEYbpCsG+MpLM7OAliy2gTepEFQwl1vZ6DL3QMH2FveMa3HLvPsOdhJsPRB3KtxVhph9T75A==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-cloudfront@3.1123.0':
-    resolution: {integrity: sha512-UxytnGyGuFjGUtf9xge1CKucRqljLPUKBMjpFzF5qV4G9gBAL1XQm4kzU91vRJf9TsMPHXDtNAZWBHvvsaXfgg==}
+  '@aws-sdk/client-cloudfront@3.1124.0':
+    resolution: {integrity: sha512-eCTPtU83/AkZK51LnUG4mMTiog6ojkdhQCT7Ilc76rowtREPAZJem2AIUS2r3Qrm2+mhWWvU1kF3j1l1UoDt4A==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-s3@3.1123.0':
-    resolution: {integrity: sha512-InD/KXgF4clIFtqo8yzQQG755/BBoLstsC5WITLrMckKUUaACQgbpbZcdsySAXU3Uukp/3RV0Aiv5H3eDNGXcw==}
+  '@aws-sdk/client-s3@3.1124.0':
+    resolution: {integrity: sha512-f20BksgVlXufcf/mijde1LAjwM/iSDdG3mGtN3yRFOUzXtlFEOjxNi1Rf2Kb+rSgoiOSpO0hUOna9Bs+J1gX2A==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.977.9':
@@ -735,6 +735,10 @@ packages:
     resolution: {integrity: sha512-wFmHxf2WfPVXD8uvFpaxdY882ELqYhdPu1aQM9VM/UYUtJg+7uCj9k785ujYfgbSKgxfY6APgwI++n59v3Entg==}
     engines: {node: '>=8.0.0'}
 
+  '@contentstack/management@1.31.1':
+    resolution: {integrity: sha512-tl0Egw40B7DC+rpPDpGM4CU79m9lQKDtkHxtqEfwdC86K4b0xOUt2ZYwOlrwyr9ShE/QB8Q33abC1a9+1823uQ==}
+    engines: {node: '>=8.0.0'}
+
   '@contentstack/marketplace-sdk@1.5.4':
     resolution: {integrity: sha512-rqsL/FvYTqF1a1MK/AZLdWCGf7WY48f4pT/iLkwt6wxh7apxaAwWSWy9ZWRtDu7EIV9FDDTHZ33iYWKH41fnlw==}
 
@@ -812,8 +816,8 @@ packages:
     resolution: {integrity: sha512-pHoYRWS08oeU0qVez1pZCcbqHzoJnM5VMtrxH2nWDJ0ukq9DkwWV1BTY+PWK+eWBbndN9W0O9WjJTyAHsDoPOg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/eslintrc@3.3.6':
-    resolution: {integrity: sha512-l2Ul9PrHsPCKcEY/ac7VgFj9D80C7S68sOKc618SyHDPK36s1XcFebXY0iTzUVn4Yq+YbwvSnDmCz9yxjX+QrA==}
+  '@eslint/eslintrc@3.3.7':
+    resolution: {integrity: sha512-F42g89Qd5oAWtp0k0nnSrjziAKza7w8SVT4mStc18LZMaRb4J1HQAHLCalEtDCxrTuksx7NU9qsmeLwpOfPqWw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/js@9.39.5':
@@ -2224,8 +2228,8 @@ packages:
     engines: {node: '>=0.12.18'}
     hasBin: true
 
-  electron-to-chromium@1.5.418:
-    resolution: {integrity: sha512-UzS26r3AEbG5wSoGVpJKqwHIU9zwQN7LHdVIThDrJpS0I5KdlXFMEb8543fhc9dVnIIAST6ar8rhwa00AL5MlA==}
+  electron-to-chromium@1.5.420:
+    resolution: {integrity: sha512-2yD6XreGusOfNV+dUcvipJEXc3n/n7fgr7996aszTG+YY5E4mqM4tOq/3uhP129cazL9YHbVWSpc79ePotWtPA==}
 
   elegant-spinner@1.0.1:
     resolution: {integrity: sha512-B+ZM+RXvRqQaAmkMlO/oSe5nMUOaUnyfGYCEHoR8wrXsZR2mA0XVibsxV1bvTwxdRWah1PkQqso2EzhILGHtEQ==}
@@ -4900,7 +4904,7 @@ snapshots:
       '@smithy/types': 4.17.2
       tslib: 2.8.1
 
-  '@aws-sdk/client-cloudfront@3.1123.0':
+  '@aws-sdk/client-cloudfront@3.1124.0':
     dependencies:
       '@aws-sdk/core': 3.977.9
       '@aws-sdk/credential-provider-node': 3.972.82
@@ -4911,7 +4915,7 @@ snapshots:
       '@smithy/types': 4.17.2
       tslib: 2.8.1
 
-  '@aws-sdk/client-s3@3.1123.0':
+  '@aws-sdk/client-s3@3.1124.0':
     dependencies:
       '@aws-sdk/checksums': 3.1000.29
       '@aws-sdk/core': 3.977.9
@@ -5475,6 +5479,22 @@ snapshots:
       - debug
       - supports-color
 
+  '@contentstack/management@1.31.1':
+    dependencies:
+      '@contentstack/utils': 1.9.1
+      assert: 2.1.0
+      axios: 1.20.0(debug@4.4.3)
+      buffer: 6.0.3
+      form-data: 4.0.6
+      husky: 9.1.7
+      lodash: 4.18.1
+      otplib: 12.0.1
+      qs: 6.16.0
+      stream-browserify: 3.0.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
   '@contentstack/marketplace-sdk@1.5.4(debug@4.4.3)':
     dependencies:
       '@contentstack/utils': 1.9.1
@@ -5571,7 +5591,7 @@ snapshots:
       '@eslint/css-tree': 3.6.9
       '@eslint/plugin-kit': 0.3.5
 
-  '@eslint/eslintrc@3.3.6':
+  '@eslint/eslintrc@3.3.7':
     dependencies:
       ajv: 6.15.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -7001,7 +7021,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.11.20
       caniuse-lite: 1.0.30001810
-      electron-to-chromium: 1.5.418
+      electron-to-chromium: 1.5.420
       node-releases: 2.0.54
       update-browserslist-db: 1.3.2(browserslist@4.28.8)
 
@@ -7447,7 +7467,7 @@ snapshots:
 
   ejs@6.0.1: {}
 
-  electron-to-chromium@1.5.418: {}
+  electron-to-chromium@1.5.420: {}
 
   elegant-spinner@1.0.1: {}
 
@@ -7604,7 +7624,7 @@ snapshots:
       '@typescript-eslint/parser': 6.21.0(eslint@10.9.1)(typescript@5.9.3)
       eslint-config-xo-space: 0.35.0(eslint@10.9.1)
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1))(eslint@10.9.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.9.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1))(eslint@10.9.1))(eslint@10.9.1)
       eslint-plugin-mocha: 10.5.0(eslint@10.9.1)
       eslint-plugin-n: 15.7.0(eslint@10.9.1)
       eslint-plugin-perfectionist: 2.11.0(eslint@10.9.1)(typescript@5.9.3)
@@ -7631,7 +7651,7 @@ snapshots:
   eslint-config-oclif@6.0.179(eslint@10.9.1)(typescript@4.9.5):
     dependencies:
       '@eslint/compat': 1.4.1(eslint@10.9.1)
-      '@eslint/eslintrc': 3.3.6
+      '@eslint/eslintrc': 3.3.7
       '@eslint/js': 9.39.5
       '@stylistic/eslint-plugin': 3.1.0(eslint@10.9.1)(typescript@4.9.5)
       '@typescript-eslint/eslint-plugin': 8.69.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1)(typescript@4.9.5))(eslint@10.9.1)(typescript@4.9.5)
@@ -7656,7 +7676,7 @@ snapshots:
   eslint-config-oclif@6.0.179(eslint@10.9.1)(typescript@5.9.3):
     dependencies:
       '@eslint/compat': 1.4.1(eslint@10.9.1)
-      '@eslint/eslintrc': 3.3.6
+      '@eslint/eslintrc': 3.3.7
       '@eslint/js': 9.39.5
       '@stylistic/eslint-plugin': 3.1.0(eslint@10.9.1)(typescript@5.9.3)
       '@typescript-eslint/eslint-plugin': 8.69.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1)(typescript@5.9.3)
@@ -7664,7 +7684,7 @@ snapshots:
       eslint-config-xo: 0.49.0(eslint@10.9.1)
       eslint-config-xo-space: 0.35.0(eslint@10.9.1)
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1))(eslint@10.9.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.9.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1))(eslint@10.9.1))(eslint@10.9.1)
       eslint-plugin-jsdoc: 50.8.0(eslint@10.9.1)
       eslint-plugin-mocha: 10.5.0(eslint@10.9.1)
       eslint-plugin-n: 17.24.0(eslint@10.9.1)(typescript@5.9.3)
@@ -7716,7 +7736,7 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.12.2
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.9.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1))(eslint@10.9.1))(eslint@10.9.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -7821,7 +7841,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.9.1):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1))(eslint@10.9.1))(eslint@10.9.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -7879,7 +7899,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@10.9.1):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.9.1)(typescript@5.9.3))(eslint@10.9.1))(eslint@10.9.1))(eslint@10.9.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -9359,8 +9379,8 @@ snapshots:
 
   oclif@4.24.0(@types/node@14.18.63):
     dependencies:
-      '@aws-sdk/client-cloudfront': 3.1123.0
-      '@aws-sdk/client-s3': 3.1123.0
+      '@aws-sdk/client-cloudfront': 3.1124.0
+      '@aws-sdk/client-s3': 3.1124.0
       '@inquirer/confirm': 3.2.0
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
@@ -9388,8 +9408,8 @@ snapshots:
 
   oclif@4.24.0(@types/node@18.19.130):
     dependencies:
-      '@aws-sdk/client-cloudfront': 3.1123.0
-      '@aws-sdk/client-s3': 3.1123.0
+      '@aws-sdk/client-cloudfront': 3.1124.0
+      '@aws-sdk/client-s3': 3.1124.0
       '@inquirer/confirm': 3.2.0
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0

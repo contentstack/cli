@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,13 +14,13 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "~2.0.0",
+    "@contentstack/cli-utilities": "~2.0.1",
     "contentstack": "^3.27.0",
     "@oclif/core": "^4.11.14"
   },
   "overrides": {
     "@oclif/core": {
-      "picomatch": "^4.0.4"
+      "picomatch": "^4.0.7"
     }
   },
   "devDependencies": {
