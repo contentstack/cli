@@ -41,6 +41,9 @@ jobs:
           filename: .github/config/release.json
           prefix: release
 
+      - name: Update npm
+        run: npm install -g npm@latest
+
       # Utilities
       - name: Publishing utilities (Production)
         uses: JS-DevTools/npm-publish@v3
@@ -48,6 +51,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
           tag: latest
+          provenance: true
 
       # Command
       - name: Publishing command (Production)
@@ -56,6 +60,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
           tag: latest
+          provenance: true
 
       # Config
       - name: Publishing config (Production)
@@ -64,6 +69,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-config/package.json
           tag: latest
+          provenance: true
 
       # Auth
       - name: Publishing auth (Production)
@@ -72,3 +78,4 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json
           tag: latest
+          provenance: true

@@ -41,6 +41,9 @@ jobs:
           filename: .github/config/release.json
           prefix: release
 
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Publishing core (Production)
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
@@ -48,6 +51,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
           tag: latest
+          provenance: true
 
       - name: Create Core Production Release
         id: create_release
