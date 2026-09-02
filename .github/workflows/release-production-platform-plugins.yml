@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -13,7 +16,8 @@ jobs:
           version: 10.28.0
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: '24'
+          registry-url: https://registry.npmjs.org/
 
       - name: Enable Corepack
         run: corepack enable
@@ -37,6 +41,9 @@ jobs:
           filename: .github/config/release.json
           prefix: release
 
+      - name: Update npm
+        run: npm install -g npm@latest
+
       # Utilities
       - name: Publishing utilities (Production)
         uses: JS-DevTools/npm-publish@v3
@@ -44,6 +51,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-utilities/package.json
           tag: latest
+          provenance: true
 
       # Command
       - name: Publishing command (Production)
@@ -52,6 +60,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-command/package.json
           tag: latest
+          provenance: true
 
       # Config
       - name: Publishing config (Production)
@@ -60,6 +69,7 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-config/package.json
           tag: latest
+          provenance: true
 
       # Auth
       - name: Publishing auth (Production)
@@ -68,3 +78,4 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-auth/package.json
           tag: latest
+          provenance: true
