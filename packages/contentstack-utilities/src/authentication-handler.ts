@@ -56,6 +56,11 @@ class AuthenticationHandler {
     if (error.response && error.response.status) {
       switch (error.response.status) {
         case 401:
+          if (maxRetryCount >= 2) {
+            const errorDetails = formatError(error);
+            ux.print(`Authentication failed after token refresh: ${errorDetails}`, { color: 'red' });
+            return;
+          }
           // NOTE: Refresh the token if the type is OAuth.
           const region: { cma: string; name: string; cda: string } = configHandler.get('region') || {};
           if (region?.cma) {
@@ -67,12 +72,11 @@ class AuthenticationHandler {
             hostName = hostName || region.cma;
             const refreshed = await this.refreshToken(hostName);
             if (refreshed) {
-              return this.refreshAccessToken(error, maxRetryCount); // Retry after refreshing the token
+              return this.refreshAccessToken(error, maxRetryCount + 1);
             }
 
             const errorDetails = formatError(error);
             ux.print(`Authentication failed: ${errorDetails}`, { color: 'red' });
-            // For Basic Auth, exit immediately without retrying
             return;
           }
           break;

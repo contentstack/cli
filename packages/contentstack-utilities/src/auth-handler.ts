@@ -113,7 +113,9 @@ class AuthHandler {
   async initSDK() {
     // Ensure we have a valid host for the SDK initialization
     const host = this._host || this.getCmaHost();
-    this.managementAPIClient = await managementSDKClient({ host });
+    // skipTokenValidity: true avoids calling compareOAuthExpiry here, which would deadlock
+    // when initSDK is itself called from inside a compareOAuthExpiry refresh cycle.
+    this.managementAPIClient = await managementSDKClient({ host, skipTokenValidity: true });
     this.oauthHandler = this.managementAPIClient.oauth({
       appId: this.OAuthAppId,
       clientId: this.OAuthClientId,
@@ -397,7 +399,17 @@ class AuthHandler {
       }
 
       this.isRefreshingToken = true;
-      this.oauthRefreshInFlight = (async () => {
+      // Set the guard promise BEFORE starting the async work so re-entrant synchronous
+      // callers (e.g. compareOAuthExpiry invoked again via refreshToken → initSDK →
+      // managementSDKClient → createAPIClient) see a non-null oauthRefreshInFlight and
+      // return early instead of starting another recursive refresh cycle.
+      let _resolve: () => void;
+      let _reject: (err: unknown) => void;
+      this.oauthRefreshInFlight = new Promise<void>((res, rej) => {
+        _resolve = res;
+        _reject = rej;
+      });
+      (async () => {
         try {
           if (force) {
             cliux.print('Forcing token refresh...');
@@ -405,9 +417,10 @@ class AuthHandler {
             cliux.print('Token expired, refreshing the token');
           }
           await this.refreshToken();
+          _resolve();
         } catch (error) {
           cliux.error('Error refreshing token');
-          throw error;
+          _reject(error);
         } finally {
           this.isRefreshingToken = false;
           this.oauthRefreshInFlight = null;
