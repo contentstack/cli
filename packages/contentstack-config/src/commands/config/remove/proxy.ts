@@ -1,4 +1,4 @@
-import { configHandler, log, handleAndLogError } from '@contentstack/cli-utilities';
+import { configHandler, log, handleAndLogError, cliux, isConsoleLogEnabled } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../../base-command';
 
 export default class ProxyRemoveCommand extends BaseCommand<typeof ProxyRemoveCommand> {
@@ -17,7 +17,13 @@ export default class ProxyRemoveCommand extends BaseCommand<typeof ProxyRemoveCo
 
       log.debug('Removing proxy configuration from global config', this.contextDetails);
       configHandler.delete('proxy');
-      log.success('Proxy configuration removed from global config successfully', this.contextDetails);
+      const successMessage = 'Proxy configuration removed from global config successfully';
+      log.success(successMessage, this.contextDetails);
+
+      // Same as config:set:proxy — this is the command's only output at all.
+      if (!isConsoleLogEnabled()) {
+        cliux.print(successMessage);
+      }
     } catch (error) {
       handleAndLogError(error, { ...this.contextDetails, module: 'config-remove-proxy' });
     }

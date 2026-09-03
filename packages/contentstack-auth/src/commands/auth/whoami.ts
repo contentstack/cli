@@ -1,4 +1,4 @@
-import { cliux, log, handleAndLogError, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, log, handleAndLogError, isConsoleLogEnabled, messageHandler } from '@contentstack/cli-utilities';
 import { BaseCommand } from '../../base-command';
 
 export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
@@ -22,6 +22,13 @@ export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
       } else {
         log.debug('No user email found in context.', this.contextDetails);
         log.error(messageHandler.parse('CLI_AUTH_WHOAMI_FAILED'), this.contextDetails);
+
+        // Not-logged-in is the whole answer this command exists to give, and log.error is
+        // suppressed with every other level when the console-log policy is off. Same channel
+        // and colour as the catch block below.
+        if (!isConsoleLogEnabled()) {
+          cliux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
+        }
       }
     } catch (error) {
       log.debug('whoami command failed.', { ...this.contextDetails, error });

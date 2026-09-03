@@ -255,12 +255,16 @@ const sensitiveKeys = [
   /delivery[-._]?token/i,
 ];
 
+/**
+ * @deprecated No-op, kept only so the plugins that still call it keep compiling.
+ *
+ * Console visibility is no longer derived from `log.progressSupportedModule` — it is a
+ * process-wide policy resolved once by the core CLI's `console-policy` init hook (see
+ * `logger/console-policy.ts`), so there is nothing left to clear. Remove this export a
+ * release after the plugin call sites are gone.
+ */
 export function clearProgressModuleSetting(): void {
-  const logConfig = configHandler.get('log') || {};
-  if (logConfig?.progressSupportedModule) {
-    delete logConfig.progressSupportedModule;
-    configHandler.set('log', logConfig);
-  }
+  // Intentionally empty.
 }
 
 /**

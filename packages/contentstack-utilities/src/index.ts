@@ -82,6 +82,10 @@ export type { ChalkInstance } from './chalk';
 export { Logger };
 export { default as authenticationHandler } from './authentication-handler';
 export { v2Logger as log, cliErrorHandler, handleAndLogError, getLogPath, getSessionLogPath } from './logger/log';
+// NOTE Only the reader is exported. `setConsoleLogPolicy` stays off the index so that
+// nothing downstream of the core CLI's `console-policy` init hook can override the
+// decision — the hook imports the setter by deep path.
+export { isConsoleLogEnabled } from './logger/console-policy';
 export {
   CLIProgressManager,
   SummaryManager,

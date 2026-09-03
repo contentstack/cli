@@ -1,4 +1,12 @@
-import { flags, configHandler, FlagInput, log, handleAndLogError, cliux } from '@contentstack/cli-utilities';
+import {
+  flags,
+  configHandler,
+  FlagInput,
+  log,
+  handleAndLogError,
+  cliux,
+  isConsoleLogEnabled,
+} from '@contentstack/cli-utilities';
 import { askProxyPassword } from '../../../utils/interactive';
 import { BaseCommand } from '../../../base-command';
 
@@ -72,7 +80,15 @@ export default class ProxySetCommand extends BaseCommand<typeof ProxySetCommand>
       log.debug('Saving proxy configuration to global config', this.contextDetails);
       configHandler.set('proxy', proxyConfig);
 
-      log.success('Proxy configuration set successfully', this.contextDetails);
+      const successMessage = 'Proxy configuration set successfully';
+      log.success(successMessage, this.contextDetails);
+
+      // log.success maps to the info level, which only reaches the console when the
+      // console-log policy is on. This is the command's only output, so print it directly
+      // when the policy is off. config has no progress UI — nothing to interleave with.
+      if (!isConsoleLogEnabled()) {
+        cliux.print(successMessage);
+      }
     } catch (error) {
       handleAndLogError(error, { ...this.contextDetails, module: 'config-set-proxy' });
     }
