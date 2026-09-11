@@ -53,6 +53,7 @@
     "recheck": "~4.5.0",
     "rxjs": "^6.6.7",
     "traverse": "^0.6.11",
+    "tslib": "^2.8.1",
     "tty-table": "^4.2.3",
     "unique-string": "^2.0.0",
     "short-uuid": "^6.0.3",
