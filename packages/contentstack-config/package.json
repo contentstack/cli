@@ -17,7 +17,8 @@
     "@contentstack/cli-command": "~2.0.1",
     "@contentstack/cli-utilities": "~2.0.1",
     "@contentstack/utils": "~1.9.1",
-    "@oclif/core": "^4.11.14"
+    "@oclif/core": "^4.11.14",
+    "tslib": "^2.8.1"
   },
   "overrides": {
     "@oclif/core": {
