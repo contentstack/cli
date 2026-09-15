@@ -28,7 +28,7 @@
     "@contentstack/cli-cm-branches": "~2.0.1",
     "@contentstack/cli-cm-clone": "~2.0.1",
     "@contentstack/cli-cm-export-to-csv": "~2.0.1",
-    "@contentstack/cli-cm-import-setup": "~2.0.0",
+    "@contentstack/cli-cm-import-setup": "~2.0.1",
     "@contentstack/cli-cm-seed": "~2.0.1",
     "@contentstack/cli-command": "~2.0.1",
     "@contentstack/cli-config": "~2.0.1",
