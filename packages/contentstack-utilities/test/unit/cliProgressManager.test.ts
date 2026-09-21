@@ -2,21 +2,11 @@ import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import sinon from 'sinon';
 
-//NOTE:- Mock ora BEFORE any imports to prevent real spinners
-const mockOraInstance = {
-  start: sinon.stub().returnsThis(),
-  stop: sinon.stub().returnsThis(),
-  succeed: sinon.stub().returnsThis(),
-  fail: sinon.stub().returnsThis(),
-  warn: sinon.stub().returnsThis(),
-  info: sinon.stub().returnsThis(),
-  text: '',
-  color: 'cyan',
-  isSpinning: false,
-};
-
-const mockOra = sinon.stub().returns(mockOraInstance);
-(mockOra as any).promise = sinon.stub().returns(mockOraInstance);
+//NOTE:- The ora mock is installed from `test/helpers/mock-ora.js`, a mocharc `--require`
+// entry, because mocha loads every test file before running any of them: an interception set
+// up here would already be too late for the real ora pulled in by an earlier file. Reuse that
+// module's stubs so assertions see the spinner the code under test actually got.
+const { mockOra, mockOraInstance } = require('../helpers/mock-ora');
 
 // Mock require.cache to intercept ora module loading
 const Module = require('module');
@@ -56,9 +46,15 @@ Module.prototype.require = function (id: string) {
   return originalRequire.apply(this, arguments);
 };
 
+// NOTE `configHandler` is imported through the package index on purpose. `config-handler.ts`
+// imports `cliux` back from the barrel, so the module graph has to be entered at the index —
+// the same way every consumer enters it — or `auth-handler`'s module-scope initialisation
+// runs against a half-built `configHandler`. This file used to get that ordering by accident,
+// via the `import { configHandler } from '..'` that `cli-progress-manager` no longer needs.
+import { configHandler } from '../../src';
 import CLIProgressManager from '../../src/progress-summary/cli-progress-manager';
 import SummaryManager from '../../src/progress-summary/summary-manager';
-import configHandler from '../../src/config-handler';
+import { setConsoleLogPolicy, resetConsoleLogPolicy } from '../../src/logger/console-policy';
 
 // Optimized cleanup function for fast tests
 function forceCleanupSpinners() {
@@ -85,7 +81,11 @@ describe('CLIProgressManager', () => {
   
   beforeEach(() => {
     forceCleanupSpinners();
-    
+
+    // The console-log policy is a module-level singleton, so reset it or cases leak into
+    // each other.
+    resetConsoleLogPolicy();
+
     // Mock require.cache to intercept ora and cli-progress module loading
     Module.prototype.require = function (id: string) {
       if (id === 'ora') {
@@ -107,6 +107,7 @@ describe('CLIProgressManager', () => {
     Module.prototype.require = originalRequire;
     forceCleanupSpinners();
     CLIProgressManager.clearGlobalSummary();
+    resetConsoleLogPolicy();
   });
 
   beforeEach(() => {
@@ -223,7 +224,7 @@ describe('CLIProgressManager', () => {
     });
 
     fancy.it('should create simple progress manager', () => {
-      const simple = CLIProgressManager.createSimple('testModule', 50, true);
+      const simple = CLIProgressManager.createSimple('testModule', 50);
       try {
         expect(simple).to.be.instanceOf(CLIProgressManager);
       } finally {
@@ -236,7 +237,7 @@ describe('CLIProgressManager', () => {
     });
 
     fancy.it('should create nested progress manager', () => {
-      const nested = CLIProgressManager.createNested('testModule', false);
+      const nested = CLIProgressManager.createNested('testModule');
       try {
         expect(nested).to.be.instanceOf(CLIProgressManager);
       } finally {
@@ -516,6 +517,148 @@ describe('CLIProgressManager', () => {
     });
   });
 
+  // Console logs and the progress UI are two consumers of one terminal, so exactly one of
+  // them may own it. These cases assert the manager reads that decision from the policy
+  // itself, which is what makes interleaved output unreachable by configuration.
+  describe('Console log policy (mutual exclusion with the progress UI)', () => {
+    fancy.it('constructs no renderer for a simple manager when console logs are on', () => {
+      setConsoleLogPolicy(true);
+      progressManager = CLIProgressManager.createSimple('MUTEX_SIMPLE', 25);
+
+      expect(progressManager['progressBar'], 'progress bar').to.be.null;
+      expect(progressManager['multiBar'], 'multi bar').to.be.null;
+      expect(progressManager['spinner'], 'spinner').to.be.null;
+    });
+
+    fancy.it('constructs no renderer for a nested manager when console logs are on', () => {
+      setConsoleLogPolicy(true);
+      progressManager = CLIProgressManager.createNested('MUTEX_NESTED');
+
+      expect(progressManager['progressBar'], 'progress bar').to.be.null;
+      expect(progressManager['multiBar'], 'multi bar').to.be.null;
+      expect(progressManager['spinner'], 'spinner').to.be.null;
+    });
+
+    fancy.it('constructs no spinner for a total-less manager when console logs are on', () => {
+      setConsoleLogPolicy(true);
+      progressManager = CLIProgressManager.createSimple('MUTEX_SPINNER');
+
+      expect(progressManager['spinner'], 'spinner').to.be.null;
+      expect(mockOra.called, 'ora must not be constructed at all').to.be.false;
+    });
+
+    fancy.it('builds the expected renderer for each shape when console logs are off', () => {
+      const simple = CLIProgressManager.createSimple('UI_SIMPLE', 25);
+      const nested = CLIProgressManager.createNested('UI_NESTED');
+      const spinning = CLIProgressManager.createSimple('UI_SPINNER');
+
+      try {
+        expect(simple['progressBar'], 'a bounded module gets a single bar').to.not.be.null;
+        expect(nested['multiBar'], 'a nested module gets a multi bar').to.not.be.null;
+        expect(spinning['spinner'], 'an unbounded module gets a spinner').to.not.be.null;
+      } finally {
+        [simple, nested, spinning].forEach((m) => {
+          try {
+            m.stop();
+          } catch (e) {
+            // ignore
+          }
+        });
+      }
+    });
+
+    // The factories keep a third parameter only so the plugins still passing it compile;
+    // it must not be able to reintroduce the caller-threaded flag this policy replaced.
+    fancy.it('ignores a showConsoleLogs argument passed to the factories', () => {
+      setConsoleLogPolicy(true);
+      const forcedOff = CLIProgressManager.createSimple('OVERRIDE_ATTEMPT', 25, false);
+
+      try {
+        expect(forcedOff['progressBar'], 'a caller must not be able to force the UI on').to.be.null;
+        expect(forcedOff['showConsoleLogs']).to.equal(true);
+      } finally {
+        try {
+          forcedOff.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      resetConsoleLogPolicy();
+      const forcedOn = CLIProgressManager.createNested('OVERRIDE_ATTEMPT_2', true);
+
+      try {
+        expect(forcedOn['multiBar'], 'a caller must not be able to force the UI off').to.not.be.null;
+        expect(forcedOn['showConsoleLogs']).to.equal(false);
+      } finally {
+        try {
+          forcedOn.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
+    });
+
+    fancy.it('withLoadingSpinner runs the action without a spinner when console logs are on', async () => {
+      setConsoleLogPolicy(true);
+      let ran = false;
+
+      const result = await CLIProgressManager.withLoadingSpinner('loading', async () => {
+        ran = true;
+        return 'done';
+      });
+
+      expect(ran, 'the action must still run').to.be.true;
+      expect(result).to.equal('done');
+      expect(mockOra.called, 'no spinner may be started in console-log mode').to.be.false;
+    });
+
+    fancy.it('withLoadingSpinner starts and stops a spinner when console logs are off', async () => {
+      mockOraInstance.start.resetHistory();
+      mockOraInstance.stop.resetHistory();
+
+      const result = await CLIProgressManager.withLoadingSpinner('loading', async () => 'done');
+
+      expect(result).to.equal('done');
+      expect(mockOra.calledWith('loading'), 'spinner must be created').to.be.true;
+      expect(mockOraInstance.start.called, 'spinner must be started').to.be.true;
+      expect(mockOraInstance.stop.called, 'spinner must be stopped').to.be.true;
+    });
+
+    fancy.it('withLoadingSpinner stops the spinner and rethrows when the action fails', async () => {
+      mockOraInstance.stop.resetHistory();
+
+      try {
+        await CLIProgressManager.withLoadingSpinner('loading', async () => {
+          throw new Error('action failed');
+        });
+        expect.fail('the error should have propagated');
+      } catch (error: any) {
+        expect(error.message).to.equal('action failed');
+      }
+
+      expect(mockOraInstance.stop.called, 'spinner must be stopped on failure too').to.be.true;
+    });
+
+    fancy.it('skips the operation header when console logs are on', () => {
+      setConsoleLogPolicy(true);
+      consoleLogStub.resetHistory();
+
+      CLIProgressManager.initializeGlobalSummary('TEST_OPERATION', 'main', 'MAIN CONTENT');
+
+      const printedHeader = consoleLogStub.getCalls().some((call) => call.args[0]?.includes?.('MAIN CONTENT'));
+      expect(printedHeader, 'the header is progress UI and must not print').to.be.false;
+    });
+
+    fancy.it('prints the operation header when console logs are off', () => {
+      consoleLogStub.resetHistory();
+
+      CLIProgressManager.initializeGlobalSummary('TEST_OPERATION', 'main', 'MAIN CONTENT');
+
+      const printedHeader = consoleLogStub.getCalls().some((call) => call.args[0]?.includes?.('MAIN CONTENT'));
+      expect(printedHeader, 'the header belongs to progress UI mode').to.be.true;
+    });
+  });
   describe('Logging and Console Output', () => {
     beforeEach(() => {
       progressManager = new CLIProgressManager({

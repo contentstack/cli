@@ -1,4 +1,12 @@
-import { configHandler, isFeatureEnabled, FeatureCtx, FeatureStatus, log } from '@contentstack/cli-utilities';
+import {
+  configHandler,
+  isFeatureEnabled,
+  FeatureCtx,
+  FeatureStatus,
+  log,
+  cliux,
+  isConsoleLogEnabled,
+} from '@contentstack/cli-utilities';
 
 function getArgvFlag(argv: string[], ...names: string[]): string | undefined {
   for (let i = 0; i < argv.length; i++) {
@@ -72,11 +80,19 @@ export default async function (opts: { Command?: { id?: string }; argv?: string[
     try {
       planStatus[featureUid] = await isFeatureEnabled(featureUid, ctx);
     } catch (error) {
-      log.warn(`[plan-guard] Could not fetch status for "${featureUid}": ${(error as Error).message}`, {
+      const warning = `[plan-guard] Could not fetch status for "${featureUid}": ${(error as Error).message}`;
+      log.warn(warning, {
         module: 'plan-guard',
         commandId,
         featureUid,
       });
+
+      // The Console transport is suppressed for every level when the console-log policy is
+      // off, so without this the user is never told the entitlement check could not run.
+      // This is a prerun hook — no command has started, so no progress bar or spinner is live.
+      if (!isConsoleLogEnabled()) {
+        cliux.print(warning, { color: 'yellow' });
+      }
       failedFeatures.push(featureUid);
     }
   }

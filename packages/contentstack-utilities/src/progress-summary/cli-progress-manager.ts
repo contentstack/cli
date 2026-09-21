@@ -3,8 +3,8 @@ import ora, { Ora } from 'ora';
 import ProgressBar from 'cli-progress';
 import SummaryManager from './summary-manager';
 import { ProcessProgress, ProgressManagerOptions, Failure } from '../interfaces';
-import { configHandler } from '..';
 import { ProgressStrategyRegistry } from './progress-strategy';
+import { isConsoleLogEnabled } from '../logger/console-policy';
 
 interface ProgressCallback {
   onModuleStart?: (moduleName: string) => void;
@@ -37,7 +37,7 @@ export default class CLIProgressManager {
   private branchName: string;
 
   constructor({
-    showConsoleLogs = false,
+    showConsoleLogs = isConsoleLogEnabled(),
     total = 0,
     moduleName = 'Module',
     enableNestedProgress = false,
@@ -70,7 +70,7 @@ export default class CLIProgressManager {
     CLIProgressManager.globalSummary = new SummaryManager({ operationName, context: { branchName } });
 
     // Only show header if console logs are disabled (progress UI mode)
-    if (!configHandler.get('log')?.showConsoleLogs) {
+    if (!isConsoleLogEnabled()) {
       CLIProgressManager.displayOperationHeader(branchName, headerTitle);
     }
 
@@ -167,32 +167,44 @@ export default class CLIProgressManager {
 
   /**
    * Create a simple progress manager (no nested processes)
+   *
+   * @param _showConsoleLogs Deprecated and ignored. Console visibility is a process-wide
+   *   policy (`isConsoleLogEnabled()`), which the constructor reads itself — a caller must
+   *   not be able to override it. The parameter is retained only so the plugins still
+   *   passing it keep compiling, and is removed once those call sites are gone.
    */
-  static createSimple(moduleName: string, total?: number, showConsoleLogs = false): CLIProgressManager {
+  static createSimple(moduleName: string, total?: number, _showConsoleLogs?: boolean): CLIProgressManager {
     return new CLIProgressManager({
       moduleName: moduleName.toUpperCase(),
       total: total || 0,
-      showConsoleLogs,
       enableNestedProgress: false,
     });
   }
 
   /**
    * Create a nested progress manager (with sub-processes)
+   *
+   * @param _showConsoleLogs Deprecated and ignored — see `createSimple`.
    */
-  static createNested(moduleName: string, showConsoleLogs = false): CLIProgressManager {
+  static createNested(moduleName: string, _showConsoleLogs?: boolean): CLIProgressManager {
     return new CLIProgressManager({
       moduleName: moduleName.toUpperCase(),
       total: 0,
-      showConsoleLogs,
       enableNestedProgress: true,
     });
   }
 
   /**
-   * Show a loading spinner before initializing progress
+   * Show a loading spinner while an async operation runs.
+   *
+   * A spinner is part of the progress UI, so it is skipped entirely when console logs own
+   * the terminal — callers do not need to branch on the policy themselves.
    */
   static async withLoadingSpinner<T>(message: string, asyncOperation: () => Promise<T>): Promise<T> {
+    if (isConsoleLogEnabled()) {
+      return asyncOperation();
+    }
+
     const spinner = ora(message).start();
     try {
       const result = await asyncOperation();
@@ -288,6 +300,10 @@ export default class CLIProgressManager {
   }
 
   private initializeProgress(): void {
+    // Console logs and the progress UI are mutually exclusive: exactly one of them owns
+    // the terminal. When console logging is on, no renderer is created at all — not
+    // suppressed, not buffered, never constructed. Everything below is therefore reached
+    // only in progress-UI mode.
     if (this.showConsoleLogs) {
       return;
     }
@@ -305,13 +321,9 @@ export default class CLIProgressManager {
         ProgressBar.Presets.shades_classic,
       );
 
-      if (!this.showConsoleLogs) {
-        console.log(getChalk().bold.cyan(`\n${this.moduleName}:`));
-      }
+      console.log(getChalk().bold.cyan(`\n${this.moduleName}:`));
     } else if (this.total > 0) {
-      if (!this.showConsoleLogs) {
-        console.log(getChalk().bold.cyan(`\n${this.moduleName}:`));
-      }
+      console.log(getChalk().bold.cyan(`\n${this.moduleName}:`));
 
       this.progressBar = new ProgressBar.SingleBar({
         format: ' {label} |' + getChalk().cyan('{bar}') + '| {percentage}% | {value}/{total} | {status}',

@@ -7,6 +7,7 @@ import {
   FlagInput,
   log,
   handleAndLogError,
+  isConsoleLogEnabled,
   messageHandler,
 } from '@contentstack/cli-utilities';
 
@@ -77,6 +78,12 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
 
         cliux.loader('');
         log.success(messageHandler.parse('CLI_AUTH_LOGOUT_SUCCESS'), this.contextDetails);
+
+        // Same as auth:login — the only success output, and dark when the console-log policy
+        // is off. The loader is stopped on the line above, so nothing is rendering here.
+        if (!isConsoleLogEnabled()) {
+          cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
+        }
         log.debug('Logout completed successfully.', this.contextDetails);
       } else {
         log.debug('User not confirmed or not authenticated, skipping logout', {
@@ -88,6 +95,11 @@ export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
           ? 'CLI_AUTH_LOGOUT_CANCELLED'
           : 'CLI_AUTH_LOGOUT_ALREADY';
         log.success(messageHandler.parse(messageKey), this.contextDetails);
+
+        // Cancelled / already-logged-out: without this the user answers "no" and sees nothing.
+        if (!isConsoleLogEnabled()) {
+          cliux.success(messageKey);
+        }
       }
     } catch (error) {
       log.debug('Logout failed.', { ...this.contextDetails, error: error.message });

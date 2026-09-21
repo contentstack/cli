@@ -18,7 +18,11 @@ export default class LogSetCommand extends Command {
     'show-console-logs': flags.boolean({
       description: 'Enable console logging.',
       allowNo: true, // no-show-console-logs
-      default: false,
+      // NOTE No `default`. oclif always populates a flag that declares one, which made the
+      // `!== undefined` guards below dead: every `config:set:log` invocation then persisted
+      // `showConsoleLogs` and reported it as set, even when the user only changed the level.
+      // Leaving it undefined is what lets those guards distinguish "not mentioned" from
+      // "explicitly set to false".
     }),
   };
 

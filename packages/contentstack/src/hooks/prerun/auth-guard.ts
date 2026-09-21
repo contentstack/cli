@@ -19,10 +19,12 @@ export default async function (opts): Promise<void> {
   }
   // Auth guard
   if (protectedCommands[opts.Command.id]) {
+    // NOTE Every exit below is non-zero. `this.exit()` and `process.exit()` both default to 0,
+    // so a command blocked by the auth guard used to report success to the caller.
     if (!isAuthenticated()) {
       handleAndLogError(new Error('Authentication required for this command'), { module: 'auth-guard', commandId: opts.Command.id });
       cliux.error('Please log in to execute the command');
-      this.exit();
+      this.exit(1);
     }
     const client = await managementSDKClient({host: region.cma})
     try {
@@ -30,13 +32,13 @@ export default async function (opts): Promise<void> {
       if (!result) {
         handleAndLogError(new Error('Error in auth validation'), { module: 'auth-guard' });
         cliux.error('Please log in to execute the command');
-        this.exit();
+        this.exit(1);
       }
-      log.debug('Logged-in user', { module: 'auth-guard', userData: result.data });    
+      log.debug('Logged-in user', { module: 'auth-guard', userData: result.data });
     } catch (error) {
       handleAndLogError(error, { module: 'auth-guard' }, 'Error in auth validation');
       cliux.error('Please log in to execute the command');
-      process.exit();
-    }   
+      process.exit(1);
+    }
   }
 }

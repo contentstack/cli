@@ -140,6 +140,11 @@ export interface ProcessProgress {
 }
 
 export interface ProgressManagerOptions {
+  /**
+   * Defaults to the process-wide console-log policy (`isConsoleLogEnabled()`), which is
+   * what production code should rely on. Pass it explicitly only to drive the two modes
+   * directly, e.g. from tests.
+   */
   showConsoleLogs?: boolean;
   total?: number;
   moduleName?: string;

@@ -1,6 +1,7 @@
 {
     "require": [
       "test/helpers/init.js",
+      "test/helpers/mock-ora.js",
       "ts-node/register",
       "source-map-support/register",
       "test/helpers/mocha-root-hooks.js"
