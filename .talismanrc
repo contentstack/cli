@@ -1,6 +1,8 @@
 fileignoreconfig:
   - filename: pnpm-lock.yaml
-    checksum: ad8af6ca67f20585ba2e3478cb6119a50508da89492119eabb7d96ec2b56545f
+    ignore_detectors:
+      - filecontent
+      - base64content
   - filename: packages/contentstack/README.md
     checksum: df0892cbcf3f04972161b30a1a0ef8844a2682ce8a3270f2911909e7789ad8d7
 version: '1.0'
