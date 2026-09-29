@@ -33,7 +33,7 @@
     "@contentstack/cli-cm-seed": "~1.15.11",
     "@contentstack/cli-command": "~1.8.8",
     "@contentstack/cli-config": "~1.21.3",
-    "@contentstack/cli-launch": "^1.11.2",
+    "@contentstack/cli-launch": "^1.11.3",
     "@contentstack/cli-migration": "~1.12.7",
     "@contentstack/cli-utilities": "~1.20.0",
     "@contentstack/cli-variants": "~1.6.3",
