@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "Contentstack",
   "scripts": {
     "build": "pnpm compile && oclif manifest && oclif readme",
@@ -14,10 +14,11 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-command": "~2.0.1",
-    "@contentstack/cli-utilities": "~2.0.1",
+    "@contentstack/cli-command": "~2.0.2",
+    "@contentstack/cli-utilities": "~2.0.2",
     "@contentstack/utils": "~1.9.1",
-    "@oclif/core": "^4.11.14"
+    "@oclif/core": "^4.11.14",
+    "tslib": "^2.8.1"
   },
   "overrides": {
     "@oclif/core": {
