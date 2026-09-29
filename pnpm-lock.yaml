@@ -30,7 +30,7 @@ importers:
         specifier: ~2.0.1
         version: 2.0.1(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-auth':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-auth
       '@contentstack/cli-bulk-operations':
         specifier: ^2.1.0
@@ -60,16 +60,16 @@ importers:
         specifier: ~2.0.1
         version: 2.0.1(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-command':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-command
       '@contentstack/cli-config':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-config
       '@contentstack/cli-migration':
         specifier: ~2.0.1
         version: 2.0.1(@types/node@18.19.130)(debug@4.4.3)
       '@contentstack/cli-utilities':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-utilities
       '@contentstack/cli-variants':
         specifier: ~2.0.1
@@ -193,10 +193,10 @@ importers:
   packages/contentstack-auth:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.11.14
@@ -263,7 +263,7 @@ importers:
   packages/contentstack-command:
     dependencies:
       '@contentstack/cli-utilities':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-utilities
       '@oclif/core':
         specifier: ^4.11.14
@@ -309,10 +309,10 @@ importers:
   packages/contentstack-config:
     dependencies:
       '@contentstack/cli-command':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-command
       '@contentstack/cli-utilities':
-        specifier: ~2.0.1
+        specifier: ~2.0.2
         version: link:../contentstack-utilities
       '@contentstack/utils':
         specifier: ~1.9.1
