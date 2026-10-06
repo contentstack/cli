@@ -28,7 +28,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "~1.31.1",
+    "@contentstack/management": "~1.31.2",
     "@contentstack/marketplace-sdk": "^1.5.4",
     "@contentstack/utils": "~1.9.1",
     "@oclif/core": "^4.11.14",
