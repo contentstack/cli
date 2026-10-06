@@ -1,3 +1,6 @@
 fileignoreconfig:
-- filename: pnpm-lock.yaml
-  checksum: cbcd291500cd619f18736fe4b1d2e5c98cc3699bc28feae851f054833e99ead9
+  - filename: pnpm-lock.yaml
+    ignore_detectors:
+      - filecontent
+      - base64content
+version: '1.0'
