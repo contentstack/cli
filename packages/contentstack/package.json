@@ -12,7 +12,7 @@
     "build": "pnpm compile && oclif manifest && oclif readme",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
-    "postpack": "rm -f oclif.manifest.json",
+    "postpack": "ggshield secret scan archive ./*.tgz && rm -f oclif.manifest.json",
     "version": "oclif readme  && git add README.md",
     "test": "mocha \"test/unit/**/*.test.ts\"",
     "lint": "eslint src/**/*.ts",
