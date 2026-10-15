@@ -26,4 +26,5 @@ snyk_output.log
 **/migration-logs
 **/migration-logs/**
 *.logs
-tsconfig.tsbuildinfo.cache_ggshield
+tsconfig.tsbuildinfo
+.cache_ggshield
