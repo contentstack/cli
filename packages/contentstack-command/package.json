@@ -8,6 +8,7 @@
   "scripts": {
     "build": "pnpm compile",
     "prepack": "pnpm compile",
+    "postpack": "ggshield secret scan archive ./*.tgz",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "test": "mocha \"test/unit/**/*.test.ts\"",

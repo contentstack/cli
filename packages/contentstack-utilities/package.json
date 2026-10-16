@@ -6,6 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "prepack": "pnpm compile",
+    "postpack": "ggshield secret scan archive ./*.tgz",
     "build": "pnpm compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
