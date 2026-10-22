@@ -3,4 +3,6 @@ fileignoreconfig:
     ignore_detectors:
       - filecontent
       - base64content
+  - filename: .github/workflows/release.yml
+    checksum: 0b0118cace13be66d29c9fc021e46128640e230846589b74c01141b7bc57b93b
 version: '1.0'
