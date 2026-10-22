@@ -36,18 +36,63 @@ jobs:
       - name: Install ggshield
         run: pipx install ggshield
 
-      - name: Publish every package whose version is not on npm yet, in release order
+      # Each step publishes its package unless that version is already on npm.
+      - name: Publish utilities
+        working-directory: packages/contentstack-utilities
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
         run: |
-          for dir in contentstack-utilities contentstack-command contentstack-config contentstack-auth contentstack; do
-            (
-              cd "packages/$dir"
-              name=$(jq -r .name package.json); version=$(jq -r .version package.json)
-              if npm view "$name@$version" version >/dev/null 2>&1; then
-                echo "skip $name@$version (already on npm)"
-              else
-                npm publish --access public
-              fi
-            )
-          done
+          name=$(jq -r .name package.json); version=$(jq -r .version package.json)
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "skip $name@$version (already on npm)"
+          else
+            npm publish --access public
+          fi
+
+      - name: Publish command
+        working-directory: packages/contentstack-command
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+        run: |
+          name=$(jq -r .name package.json); version=$(jq -r .version package.json)
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "skip $name@$version (already on npm)"
+          else
+            npm publish --access public
+          fi
+
+      - name: Publish config
+        working-directory: packages/contentstack-config
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+        run: |
+          name=$(jq -r .name package.json); version=$(jq -r .version package.json)
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "skip $name@$version (already on npm)"
+          else
+            npm publish --access public
+          fi
+
+      - name: Publish auth
+        working-directory: packages/contentstack-auth
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+        run: |
+          name=$(jq -r .name package.json); version=$(jq -r .version package.json)
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "skip $name@$version (already on npm)"
+          else
+            npm publish --access public
+          fi
+
+      - name: Publish core
+        working-directory: packages/contentstack
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+        run: |
+          name=$(jq -r .name package.json); version=$(jq -r .version package.json)
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "skip $name@$version (already on npm)"
+          else
+            npm publish --access public
+          fi

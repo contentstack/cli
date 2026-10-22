@@ -4,5 +4,5 @@ fileignoreconfig:
       - filecontent
       - base64content
   - filename: .github/workflows/release.yml
-    checksum: 2056b79e378979ce80cf96b2ae65199fb83034f2899531b6f2f1b19edc22c1d0
+    checksum: 5c861888ffcbff0aa132acb5a4e3b572734277342519ee033d03faa367039b5f
 version: '1.0'
