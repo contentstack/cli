@@ -7,3 +7,4 @@ overrides:
   brace-expansion: 5.0.12
   js-yaml: 5.4.2
   fast-uri: 4.2.1
+  traverse: 0.6.14
