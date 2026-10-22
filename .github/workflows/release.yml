@@ -36,13 +36,18 @@ jobs:
       - name: Install ggshield
         run: pipx install ggshield
 
-      - name: Publish every package whose version is not on npm yet, in dependency order
+      - name: Publish every package whose version is not on npm yet, in release order
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
         run: |
-          pnpm -r --sort --workspace-concurrency=1 exec -- sh -c '
-            name=$(jq -r .name package.json); version=$(jq -r .version package.json)
-            if npm view "$name@$version" version >/dev/null 2>&1; then
-              echo "skip $name@$version (already on npm)"; exit 0
-            fi
-            npm publish --access public'
+          for dir in contentstack-utilities contentstack-command contentstack-config contentstack-auth contentstack; do
+            (
+              cd "packages/$dir"
+              name=$(jq -r .name package.json); version=$(jq -r .version package.json)
+              if npm view "$name@$version" version >/dev/null 2>&1; then
+                echo "skip $name@$version (already on npm)"
+              else
+                npm publish --access public
+              fi
+            )
+          done
