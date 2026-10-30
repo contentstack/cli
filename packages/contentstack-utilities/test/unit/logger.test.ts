@@ -31,7 +31,7 @@ describe('Logger', () => {
 
   fancy.it('should redact sensitive keys', () => {
     const testMeta = {
-      password: 'secret123',
+      password: 'PASSWORD',
       token: 'tokenvalue',
       email: 'user@example.com',
       other: 'safe',
