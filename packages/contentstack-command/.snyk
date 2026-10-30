@@ -1,0 +1,12 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-PICOMATCH-21248802:
+    - '*':
+        reason: >-
+          No fixed picomatch release exists (4.0.7 is latest); comes in via
+          @oclif/core > tinyglobby. Re-check on expiry.
+        expires: 2026-11-29T00:00:00.000Z
+        created: 2026-10-30T11:01:25.513Z
+patch: {}
