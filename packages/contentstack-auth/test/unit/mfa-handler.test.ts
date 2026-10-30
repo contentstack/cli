@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import mfaHandler from '../../src/utils/mfa-handler';
 
 describe('MFAHandler', () => {
-  const validSecret = 'SECRET'; // Example valid base32 secret
+  const validSecret = 'SECRETSECRETSECRET'; // Example valid base32 secret
   const invalidSecret = 'invalid-secret';
 
   let configStub: sinon.SinonStub;
@@ -57,7 +57,7 @@ describe('MFAHandler', () => {
     });
 
     it('should prioritize environment variable over stored configuration', async () => {
-      const envSecret = 'TOKEN'; // Different from stored secret
+      const envSecret = 'TOKENTOKENTOKENTOKEN'; // Different from stored secret
       process.env.CONTENTSTACK_MFA_SECRET = envSecret;
 
       const code = await mfaHandler.getMFACode();
