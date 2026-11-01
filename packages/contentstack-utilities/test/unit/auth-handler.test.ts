@@ -299,7 +299,7 @@ describe('Auth Handler', () => {
       const configOauthRefreshToken = 'valid_refresh_token';
       const configAuthorisationType = authHandler.authorisationTypeOAUTHValue;
       const expectedData = {
-        access_token: 'new_access_token',
+        access_token: 'ACCESS_TOKEN',
         refresh_token: 'new_refresh_token',
       };
       // Stub oauthHandler with refreshAccessToken method
